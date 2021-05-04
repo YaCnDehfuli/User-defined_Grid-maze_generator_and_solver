@@ -1,7 +1,7 @@
 #include <iostream>
-// #include "mid-project.h"
-
-int main(int argc, char **argv)
+#include "mid-project.h"
+int main()
 {
-    std::cout<<"test git"<<std::endl;
+Maze n (2,3);
+n.show();
 }
