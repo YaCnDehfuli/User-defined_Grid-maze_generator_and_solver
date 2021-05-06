@@ -5,6 +5,7 @@ Maze::Maze(size_t r,size_t c)
     rows=r;
     columns=c;
     m = maze(rows,std::vector<int>(columns,1));
+    vis=std::vector<std::vector<bool>>(rows,std::vector<bool>(columns,false));
 }
 
 void Maze::show()
@@ -20,3 +21,18 @@ void Maze::show()
         std::cout << std::endl;
     }
 }   
+
+void Maze::dfs()
+{
+    
+}
+
+bool Maze::is_valid(std::pair<size_t,size_t> p)
+{
+    if(p.first>=rows || p.second>=columns)
+        return false;
+    if(vis[p.first][p.second])
+        return false;
+    else
+        return true;
+}
