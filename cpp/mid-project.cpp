@@ -1,6 +1,10 @@
 #include "mid-project.h"
 #include <iomanip>
 // #include <stack>
+#include <algorithm>
+#include <random>
+#include <chrono> 
+
 Maze::Maze(size_t r, size_t c)
 {
     rows = r;
@@ -78,16 +82,13 @@ void Maze::dfs()
 
         std::vector<std::pair<size_t,size_t>> directions {up,down,left,right};
         std::cout << std::endl;
-        
+        unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+        shuffle (directions.begin(), directions.end(), std::default_random_engine(seed));
         for(auto &i:directions)
-            st.push(});
-        st.push({current_cell.first, current_cell.second + 1});
-        st.push({current_cell.first, current_cell.second - 1});
-        st.push({current_cell.first + 1, current_cell.second});
-        // next(current_cell);
+            st.push(i);
+
     }
 q:
-    // std::cout <<"kir"<<std::endl;
     for (auto &i : route)
         std::cout << i << " ";
 }
