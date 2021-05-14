@@ -65,11 +65,12 @@ void Maze::dfs()
         {
             vis[current_cell.first][current_cell.second] = true;
             route.push_back(m[current_cell.first][current_cell.second]);
-            std::cout << current_cell.first << "  " << current_cell.second << std::endl;
+            m[current_cell.first][current_cell.second]=-1;
             if (current_cell == Goal_cell)
             {
-                goto q;
+                // goto q;
                 std::cout << "this is goal" << std::endl;
+                break;
             }
         }
         else
@@ -81,16 +82,18 @@ void Maze::dfs()
         std::pair<size_t, size_t> right{current_cell.first + 1, current_cell.second};
 
         std::vector<std::pair<size_t,size_t>> directions {up,down,left,right};
-        std::cout << std::endl;
+
         unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
         shuffle (directions.begin(), directions.end(), std::default_random_engine(seed));
+        
         for(auto &i:directions)
             st.push(i);
 
     }
-q:
-    for (auto &i : route)
-        std::cout << i << " ";
+// q:
+//     std::cout<<"\n;";
+    // for (auto &i : route)
+    //     std::cout << i << " ";
 }
 
 bool Maze::is_valid(std::pair<size_t, size_t> p)

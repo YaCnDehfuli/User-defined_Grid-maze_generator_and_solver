@@ -14,7 +14,7 @@ class Maze
         std::vector<std::vector<bool>> vis;
 
         bool is_valid(std::pair<size_t,size_t> p);
-        void randorm_choose();
+        // void randorm_choose();
         maze m;
     private:
         size_t rows;
