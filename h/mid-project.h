@@ -3,6 +3,11 @@
 #include <iostream>
 #include <vector>
 #include <stack>
+#include <iomanip>
+#include <algorithm>
+#include <random>
+#include <chrono> 
+
 class Maze
 {
     using maze = std::vector<std::vector<int>>;
