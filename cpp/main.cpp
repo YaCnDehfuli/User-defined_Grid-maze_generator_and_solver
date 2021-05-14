@@ -2,6 +2,8 @@
 #include "mid-project.h"
 int main()
 {
-Maze n (2,3);
+Maze n (8,9);
 n.show();
+n.dfs();
+
 }
