@@ -6,21 +6,25 @@
 #include <iomanip>
 #include <algorithm>
 #include <random>
-#include <chrono> 
+#include <chrono>
+#include <string>
 
 class Maze
 {
     using maze = std::vector<std::vector<int>>;
-
+    using showing_maze = std::vector<std::vector<std::string>>;
+    
     public:
         Maze(size_t,size_t);
         void show();
+        void smshow();
         void dfs();
         std::vector<std::vector<bool>> vis;
-
         bool is_valid(std::pair<size_t,size_t> p);
-        // void randorm_choose();
+        void randorm_choose(double);
+        showing_maze sm;
         maze m;
+        size_t cells_to_goal;
     private:
         size_t rows;
         size_t columns;
