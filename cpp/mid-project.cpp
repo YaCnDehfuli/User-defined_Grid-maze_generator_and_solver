@@ -1,15 +1,18 @@
 #include "mid-project.h"
 
-Maze::Maze(size_t r, size_t c)
+Maze::Maze(size_t r, size_t c ,double _percentage)
 {
     rows = r;
     columns = c;
+    percentage = _percentage;
     m = maze(rows, std::vector<int>(columns, 0));
     sm = showing_maze(rows, std::vector<std::string>(columns, " "));
     vis = std::vector<std::vector<bool>>(rows, std::vector<bool>(columns, false));
+    dfs();
+    randorm_choose();
 }
 
-void Maze::show()
+void Maze::path_show()
 {
     std::cout << "\n";
     for (size_t i{}; i < rows; i++)
@@ -25,7 +28,7 @@ void Maze::show()
         std::cout << std::endl;
     }
 }
-void Maze::smshow()
+void Maze::maze_show()
 {
     std::cout << "\n";
     for (size_t i{}; i < columns; i++)
@@ -99,7 +102,6 @@ q:
             st.push(i);
     }
 n:
-    std::cout << m[Goal_cell.first][Goal_cell.second] << std::endl;
     if (m[Goal_cell.first][Goal_cell.second] > int((rows + columns) * 1.2))
     {
         while (!st.empty())
@@ -114,7 +116,6 @@ n:
             }
         }
         std::pair<size_t, size_t> starting_cell = {0, 0};
-        // std::pair<size_t, size_t> Goal_cell = {rows - 1, columns - 1};
         current_cell = starting_cell;
         counter = 1;
         for (size_t i{}; i < rows; i++)
@@ -140,16 +141,13 @@ bool Maze::is_valid(std::pair<size_t, size_t> p)
         return true;
 }
 
-void Maze::randorm_choose(double percentage)
+void Maze::randorm_choose()
 {
     size_t counter{};
-    // std::cout<<size_t((rows * columns - cells_to_goal) * percentage / 100)<<std::endl;
     while (counter <= size_t((rows * columns - cells_to_goal) * percentage / 100))
     {
         size_t random_row = rand() % (rows);
         size_t random_column = rand() % (columns);
-        std::cout << "random row is : " << random_row << std::endl;
-        std::cout << "random coulumd is : " << random_column << std::endl;
         if (m[random_row][random_column] == 0)
         {
             sm[random_row][random_column] = "***";
