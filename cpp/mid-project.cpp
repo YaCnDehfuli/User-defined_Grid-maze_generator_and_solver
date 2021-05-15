@@ -144,7 +144,7 @@ bool Maze::is_valid(std::pair<size_t, size_t> p)
 void Maze::randorm_choose()
 {
     size_t counter{};
-    while (counter <= size_t((rows * columns - cells_to_goal) * percentage / 100))
+    while (counter <= size_t((rows * columns - cells_to_goal) * percentage / 100)+1)
     {
         size_t random_row = rand() % (rows);
         size_t random_column = rand() % (columns);

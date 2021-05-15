@@ -2,7 +2,7 @@
 #include "mid-project.h"
 int main()
 {
-Maze n (11,11,70);
+Maze n (14,14,80);
 n.path_show();
 n.maze_show();
 }
