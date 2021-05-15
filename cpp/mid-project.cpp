@@ -1,15 +1,10 @@
 #include "mid-project.h"
-#include <iomanip>
-#include <algorithm>
-#include <random>
-#include <chrono> 
 
 Maze::Maze(size_t r, size_t c)
 {
     rows = r;
     columns = c;
     m = maze(rows, std::vector<int>(columns,0));
-    size_t counter{};
     vis = std::vector<std::vector<bool>>(rows, std::vector<bool>(columns, false));
 }
 
@@ -32,15 +27,16 @@ void Maze::show()
 
 void Maze::dfs()
 {
-    int counter{1};
+    
     
     std::pair<size_t, size_t> starting_cell = {0, 0};
     std::pair<size_t, size_t> Goal_cell = {rows - 1, columns - 1};
 
     std::stack<std::pair<size_t, size_t>> st;
     std::pair<size_t, size_t> current_cell = starting_cell;
-
+    q:
     st.push(current_cell);
+    size_t counter{1};
     
     while (!st.empty())
     {
@@ -54,9 +50,16 @@ void Maze::dfs()
             counter++;
             if (current_cell == Goal_cell)
             {
-                std::cout<<std::endl<<"I found a path !!!"<<std::endl;
-                break;
-            }
+                if(counter<(size_t(rows+columns)*1.2))
+                {
+                    std::cout<<"\n"<<"I found a path !!!"<<std::endl;
+                    goto p;
+                }
+                else
+                {
+                    goto n;
+                }            
+            }        
         }
         else
             continue;
@@ -74,6 +77,36 @@ void Maze::dfs()
         for(auto &i:directions)
             st.push(i);
     }
+    n:
+    std::cout<<m[Goal_cell.first][Goal_cell.second]<<std::endl;
+    if(m[Goal_cell.first][Goal_cell.second] > int((rows+columns)*1.2))
+    {
+        while (!st.empty())
+        {
+            st.pop();
+        }
+        for(size_t i{};i<vis.size();i++)
+        {
+            for(size_t j{};j<vis[0].size();j++)
+            {
+                vis[i][j]=false;
+            }            
+        }
+        std::pair<size_t, size_t> starting_cell = {0, 0};
+        // std::pair<size_t, size_t> Goal_cell = {rows - 1, columns - 1};
+        current_cell=starting_cell;
+        counter=1;
+        for (size_t i{}; i < rows; i++)
+        {
+            for (size_t j{}; j < columns; j++)
+            {
+                m[i][j]=0;
+            }
+        }
+        goto q;
+    }
+    p:
+    std::cout<<" DFS Done"<<std::endl;
 }
 
 bool Maze::is_valid(std::pair<size_t, size_t> p)
