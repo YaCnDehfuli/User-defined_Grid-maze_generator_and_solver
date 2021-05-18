@@ -1,6 +1,6 @@
 #include "mid-project.h"
 
-Maze::Maze(size_t r, size_t c ,double _percentage)
+Maze::Maze(size_t r, size_t c, double _percentage)
 {
     rows = r;
     columns = c;
@@ -33,7 +33,7 @@ void Maze::maze_show()
     std::cout << "\n";
     for (size_t i{}; i < columns; i++)
         std::cout << "------";
-    std::cout<<std::endl;
+    std::cout << std::endl;
     for (size_t i{}; i < rows; i++)
     {
         for (size_t j{}; j < columns; j++)
@@ -48,6 +48,18 @@ void Maze::maze_show()
     }
 }
 
+bool Maze::is_valid(std::pair<size_t, size_t> p)
+{
+    if (p.first >= rows || p.second >= columns)
+        return false;
+    if (vis[p.first][p.second])
+        return false;
+    if (m[p.first][p.second] == -100)
+        return false;
+    else
+        return true;
+}
+
 void Maze::dfs()
 {
 
@@ -56,6 +68,26 @@ void Maze::dfs()
 
     std::stack<std::pair<size_t, size_t>> st;
     std::pair<size_t, size_t> current_cell = starting_cell;
+
+    for (size_t i{}; i < vis.size(); i++)
+    {
+        for (size_t j{}; j < vis[0].size(); j++)
+        {
+            vis[i][j] = false;
+        }
+    }
+
+    for (size_t i{}; i < rows; i++)
+    {
+        for (size_t j{}; j < columns; j++)
+        {
+            if (m[i][j] != -100) //|| m[rows][columns] != 0)
+            {
+                m[i][j] = 0;
+            }
+        }
+    }
+
 q:
     st.push(current_cell);
     size_t counter{1};
@@ -70,10 +102,10 @@ q:
             vis[current_cell.first][current_cell.second] = true;
             m[current_cell.first][current_cell.second] = counter;
             counter++;
-            cells_to_goal = counter;
+            dfs_cells_to_goal = counter;
             if (current_cell == Goal_cell)
             {
-                if (counter < (size_t(rows + columns) * 1.2))
+                if (counter < (size_t(rows + columns) * 1.3))
                 {
                     std::cout << "\n"
                               << "I found a path !!!" << std::endl;
@@ -102,7 +134,7 @@ q:
             st.push(i);
     }
 n:
-    if (m[Goal_cell.first][Goal_cell.second] > int((rows + columns) * 1.2))
+    if (m[Goal_cell.first][Goal_cell.second] > int((rows + columns) * 1.3))
     {
         while (!st.empty())
         {
@@ -131,27 +163,90 @@ p:
     std::cout << " DFS Done" << std::endl;
 }
 
-bool Maze::is_valid(std::pair<size_t, size_t> p)
-{
-    if (p.first >= rows || p.second >= columns)
-        return false;
-    if (vis[p.first][p.second])
-        return false;
-    else
-        return true;
-}
-
 void Maze::randorm_choose()
 {
     size_t counter{};
-    while (counter <= size_t((rows * columns - cells_to_goal) * percentage / 100)+1)
+    while (counter <= size_t((rows * columns - dfs_cells_to_goal) * percentage / 100) + 1)
     {
         size_t random_row = rand() % (rows);
         size_t random_column = rand() % (columns);
         if (m[random_row][random_column] == 0)
         {
             sm[random_row][random_column] = "***";
+            m[random_row][random_column] = -100;
             counter++;
+        }
+    }
+}
+
+void Maze::bfs()
+{
+    // Maze* mb = new Maze(rows,columns,percentage);
+    std::pair<size_t, size_t> starting_cell = {0, 0};
+    std::pair<size_t, size_t> Goal_cell = {rows - 1, columns - 1};
+
+    std::queue<std::pair<size_t, size_t>> q;
+    std::pair<size_t, size_t> current_cell = starting_cell;
+    // q:
+    for (size_t i{}; i < vis.size(); i++)
+    {
+        for (size_t j{}; j < vis[0].size(); j++)
+        {
+            vis[i][j] = false;
+        }
+    }
+
+    for (size_t i{}; i < rows; i++)
+    {
+        for (size_t j{}; j < columns; j++)
+        {
+            if (m[i][j] != -100) //|| m[rows][columns] != 0)
+            {
+                m[i][j] = 0;
+            }
+        }
+    }
+    q.push(current_cell);
+    vis[current_cell.first][current_cell.second] = true;
+    int counter{-1};
+    m[current_cell.first][current_cell.second] = counter;
+    counter--;
+
+    while (!q.empty())
+    {
+        current_cell = q.front();
+        q.pop();
+
+        std::pair<size_t, size_t> up{current_cell.first, current_cell.second - 1};
+        std::pair<size_t, size_t> down{current_cell.first, current_cell.second + 1};
+        std::pair<size_t, size_t> left{current_cell.first - 1, current_cell.second};
+        std::pair<size_t, size_t> right{current_cell.first + 1, current_cell.second};
+
+        std::vector<std::pair<size_t, size_t>> directions{up, down, left, right};
+
+        unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+        shuffle(directions.begin(), directions.end(), std::default_random_engine(seed));
+
+        for (auto &i : directions)
+        {
+            if (is_valid(i))
+            {
+                q.push(i);
+                vis[i.first][i.second] = true;
+                m[i.first][i.second] = counter;
+                counter--;
+                if (i == Goal_cell)
+                {
+                    bfs_cells_to_goal = (-1) * counter;
+                    std::cout << "\n"
+                              << "I found the shortest path !!!" << std::endl;
+                    break;
+                }
+            }
+
+            else
+                continue;
+
         }
     }
 }

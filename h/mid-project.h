@@ -8,6 +8,8 @@
 #include <random>
 #include <chrono>
 #include <string>
+// #include <bits/stdc++.h>
+#include <queue>
 
 class Maze
 {
@@ -16,16 +18,17 @@ class Maze
     
     public:
         Maze(size_t,size_t,double);
-        
         void maze_show();
         void path_show();
         void dfs();
+        void bfs();
         std::vector<std::vector<bool>> vis;
         bool is_valid(std::pair<size_t,size_t> p);
         void randorm_choose();
         showing_maze sm;
         maze m;
-        size_t cells_to_goal;
+        size_t dfs_cells_to_goal;
+        size_t bfs_cells_to_goal;
     private:
         size_t rows;
         size_t columns;
