@@ -29,7 +29,6 @@ void Maze::path_show(maze _m)
             std::cout << "--------";
         std::cout << std::endl;
     }
-    
 }
 void Maze::maze_show()
 {
@@ -53,11 +52,13 @@ void Maze::maze_show()
 
 bool Maze::is_valid(std::pair<size_t, size_t> p)
 {
-    if (p.first >= rows || p.second >= columns)
+    if(p.first <0 || p.second<0)
         return false;
-    if (vis[p.first][p.second])
+    else if (p.first >= rows || p.second >= columns)
         return false;
-    if (m[p.first][p.second] == -100)
+    else if (vis[p.first][p.second])
+        return false;
+    else if (m[p.first][p.second] == -100)
         return false;
     else
         return true;
@@ -86,7 +87,7 @@ q:
             dfs_cells_to_goal = counter;
             if (current_cell == Goal_cell)
             {
-                if (counter < (size_t(rows + columns) * 1.3))
+                if (counter < (size_t(rows + columns) * 1.4))
                 {
                     break;
                 }
@@ -112,7 +113,7 @@ q:
             st.push(i);
     }
 n:
-    if (m[Goal_cell.first][Goal_cell.second] > int((rows + columns) * 1.3))
+    if (m[Goal_cell.first][Goal_cell.second] > int((rows + columns) * 1.4))
     {
         while (!st.empty())
         {
@@ -156,8 +157,21 @@ void Maze::randorm_choose()
     }
 }
 
+bool Maze::is_valid_prime(std::pair<size_t, size_t> p)
+{
+    if(p.first <0 || p.second<0)
+        return false;
+    else if (p.first >= rows || p.second >= columns)
+        return false;
+    else if (mb[p.first][p.second] == -100)
+        return false;
+    else
+        return true;
+}
+
 void Maze::bfs()
 {
+
     // Maze* mb = new Maze(rows,columns,percentage);
     std::pair<size_t, size_t> starting_cell = {0, 0};
     std::pair<size_t, size_t> Goal_cell = {rows - 1, columns - 1};
@@ -185,7 +199,7 @@ void Maze::bfs()
     }
     q.push(current_cell);
     vis[current_cell.first][current_cell.second] = true;
-    mb[current_cell.first][current_cell.second] = current_cell.first+current_cell.second;
+    mb[current_cell.first][current_cell.second] = current_cell.first + current_cell.second + 1;
     // counter--;
 
     while (!q.empty())
@@ -197,25 +211,24 @@ void Maze::bfs()
         std::pair<size_t, size_t> down{current_cell.first, current_cell.second + 1};
         std::pair<size_t, size_t> left{current_cell.first - 1, current_cell.second};
         std::pair<size_t, size_t> right{current_cell.first + 1, current_cell.second};
-
         std::vector<std::pair<size_t, size_t>> directions{up, down, left, right};
-
+        
         unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
         shuffle(directions.begin(), directions.end(), std::default_random_engine(seed));
-        
+
         for (auto &i : directions)
         {
             if (is_valid(i))
             {
-                
+
                 q.push(i);
                 vis[i.first][i.second] = true;
-    
-                mb[i.first][i.second]= (i.first+i.second);
-                
+
+                mb[i.first][i.second] = (i.first + i.second) + 1;
+
                 if (i == Goal_cell)
                 {
-                    bfs_cells_to_goal = (i.first+i.second);
+                    bfs_cells_to_goal = (i.first + i.second) + 1;
                     std::cout << "\n"
                               << "I found the shortest path !!!" << std::endl;
                     break;
@@ -224,8 +237,45 @@ void Maze::bfs()
 
             else
                 continue;
-
         }
     }
-    // path_show(mb);
+
+    
+    size_t possible_ways = 0;
+    for (size_t i{}; i < rows; i++)
+    {
+        for (size_t j{}; j < columns; j++)
+        {
+            current_cell = {i, j};
+
+            std::pair<size_t,size_t> up{current_cell.first, current_cell.second - 1};
+            std::pair<size_t,size_t> down{current_cell.first, current_cell.second + 1};
+            std::pair<size_t,size_t> left{current_cell.first - 1, current_cell.second};
+            std::pair<size_t,size_t> right{current_cell.first + 1, current_cell.second};
+            std::vector<std::pair<size_t,size_t>> directions{up, down, left, right};
+
+            unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+            shuffle(directions.begin(), directions.end(), std::default_random_engine(seed));
+
+            if (mb[i][j] != -100 && mb[i][j] != 0)
+            {
+                // std::cout<<mb[i][j]<<std::endl;
+                for (auto d : directions)
+                {
+                    std::cout <<d.first<<"  " <<d.second<< std::endl;
+                    if (is_valid_prime(d))
+                    {
+                        bool check{mb[i][j]+1==mb[d.first][d.second]};
+                        // std::cout<<check<<std::endl;
+                        if (check)
+                        {
+                            possible_ways++;
+                            if (possible_ways > 1)
+                                mb[d.first][d.second] = 0;
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

@@ -24,6 +24,7 @@ class Maze
         void bfs();
         std::vector<std::vector<bool>> vis;
         bool is_valid(std::pair<size_t,size_t> p);
+        bool is_valid_prime(std::pair<size_t,size_t> p);
         void randorm_choose();
         showing_maze sm;
         maze m;
