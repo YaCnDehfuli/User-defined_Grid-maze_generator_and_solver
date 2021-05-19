@@ -19,7 +19,7 @@ class Maze
     public:
         Maze(size_t,size_t,double);
         void maze_show();
-        void path_show();
+        void path_show(maze);
         void dfs();
         void bfs();
         std::vector<std::vector<bool>> vis;
@@ -27,6 +27,7 @@ class Maze
         void randorm_choose();
         showing_maze sm;
         maze m;
+        maze mb;
         size_t dfs_cells_to_goal;
         size_t bfs_cells_to_goal;
     private:

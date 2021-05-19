@@ -6,20 +6,22 @@ Maze::Maze(size_t r, size_t c, double _percentage)
     columns = c;
     percentage = _percentage;
     m = maze(rows, std::vector<int>(columns, 0));
+    mb = maze(rows, std::vector<int>(columns, 0));
     sm = showing_maze(rows, std::vector<std::string>(columns, " "));
     vis = std::vector<std::vector<bool>>(rows, std::vector<bool>(columns, false));
     dfs();
     randorm_choose();
+    maze_show();
 }
 
-void Maze::path_show()
+void Maze::path_show(maze _m)
 {
     std::cout << "\n";
     for (size_t i{}; i < rows; i++)
     {
         for (size_t j{}; j < columns; j++)
         {
-            std::cout << std::setw(4) << std::left << "|" << std::setw(4) << std::fixed << m[i][j];
+            std::cout << std::setw(4) << std::left << "|" << std::setw(4) << std::fixed << _m[i][j];
         }
         std::cout << "|";
         std::cout << std::endl;
@@ -27,6 +29,7 @@ void Maze::path_show()
             std::cout << "--------";
         std::cout << std::endl;
     }
+    
 }
 void Maze::maze_show()
 {
@@ -62,32 +65,10 @@ bool Maze::is_valid(std::pair<size_t, size_t> p)
 
 void Maze::dfs()
 {
-
     std::pair<size_t, size_t> starting_cell = {0, 0};
     std::pair<size_t, size_t> Goal_cell = {rows - 1, columns - 1};
-
     std::stack<std::pair<size_t, size_t>> st;
     std::pair<size_t, size_t> current_cell = starting_cell;
-
-    for (size_t i{}; i < vis.size(); i++)
-    {
-        for (size_t j{}; j < vis[0].size(); j++)
-        {
-            vis[i][j] = false;
-        }
-    }
-
-    for (size_t i{}; i < rows; i++)
-    {
-        for (size_t j{}; j < columns; j++)
-        {
-            if (m[i][j] != -100) //|| m[rows][columns] != 0)
-            {
-                m[i][j] = 0;
-            }
-        }
-    }
-
 q:
     st.push(current_cell);
     size_t counter{1};
@@ -107,9 +88,7 @@ q:
             {
                 if (counter < (size_t(rows + columns) * 1.3))
                 {
-                    std::cout << "\n"
-                              << "I found a path !!!" << std::endl;
-                    goto p;
+                    break;
                 }
                 else
                 {
@@ -126,7 +105,6 @@ q:
         std::pair<size_t, size_t> right{current_cell.first + 1, current_cell.second};
 
         std::vector<std::pair<size_t, size_t>> directions{up, down, left, right};
-
         unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
         shuffle(directions.begin(), directions.end(), std::default_random_engine(seed));
 
@@ -159,8 +137,6 @@ n:
         }
         goto q;
     }
-p:
-    std::cout << " DFS Done" << std::endl;
 }
 
 void Maze::randorm_choose()
@@ -174,6 +150,7 @@ void Maze::randorm_choose()
         {
             sm[random_row][random_column] = "***";
             m[random_row][random_column] = -100;
+            mb[random_row][random_column] = -100;
             counter++;
         }
     }
@@ -200,17 +177,16 @@ void Maze::bfs()
     {
         for (size_t j{}; j < columns; j++)
         {
-            if (m[i][j] != -100) //|| m[rows][columns] != 0)
+            if (mb[i][j] != -100) //|| m[rows][columns] != 0)
             {
-                m[i][j] = 0;
+                mb[i][j] = 0;
             }
         }
     }
     q.push(current_cell);
     vis[current_cell.first][current_cell.second] = true;
-    int counter{-1};
-    m[current_cell.first][current_cell.second] = counter;
-    counter--;
+    mb[current_cell.first][current_cell.second] = current_cell.first+current_cell.second;
+    // counter--;
 
     while (!q.empty())
     {
@@ -226,18 +202,20 @@ void Maze::bfs()
 
         unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
         shuffle(directions.begin(), directions.end(), std::default_random_engine(seed));
-
+        
         for (auto &i : directions)
         {
             if (is_valid(i))
             {
+                
                 q.push(i);
                 vis[i.first][i.second] = true;
-                m[i.first][i.second] = counter;
-                counter--;
+    
+                mb[i.first][i.second]= (i.first+i.second);
+                
                 if (i == Goal_cell)
                 {
-                    bfs_cells_to_goal = (-1) * counter;
+                    bfs_cells_to_goal = (i.first+i.second);
                     std::cout << "\n"
                               << "I found the shortest path !!!" << std::endl;
                     break;
@@ -249,4 +227,5 @@ void Maze::bfs()
 
         }
     }
+    // path_show(mb);
 }
