@@ -8,11 +8,33 @@ Maze::Maze(size_t r, size_t c, double _percentage)
     m = maze(rows, std::vector<int>(columns, 0));
     mb = maze(rows, std::vector<int>(columns, 0));
     sm = showing_maze(rows, std::vector<std::string>(columns, " "));
+    parent_maze = maze(rows, std::vector<int>(columns, 0));
+    for (size_t i{}; i < rows; i++)
+    {
+        for (size_t j{}; j < columns; j++)
+        {
+            parent_maze[i][j]= (i*(columns))+j;
+        }
+    }
     vis = std::vector<std::vector<bool>>(rows, std::vector<bool>(columns, false));
     dfs();
     randorm_choose();
     maze_show();
 }
+
+std::pair<size_t,size_t> Maze::point_to_cordinates(size_t point)
+{
+    size_t r = size_t(point/columns);
+    size_t c = point-(r*columns);
+    std::pair<size_t,size_t> cor{r,c};
+    return cor;
+}
+
+size_t Maze::cordinates_to_point(std::pair<size_t,size_t> cori)
+{
+    return parent_maze[cori.first][cori.second];
+}
+
 
 void Maze::path_show(maze _m)
 {
@@ -187,6 +209,8 @@ void Maze::bfs()
         }
     }
 
+
+
     for (size_t i{}; i < rows; i++)
     {
         for (size_t j{}; j < columns; j++)
@@ -197,10 +221,14 @@ void Maze::bfs()
             }
         }
     }
+    std::vector<size_t> parent_vector (rows*columns);
+    std::vector<size_t> route;
+
     q.push(current_cell);
     vis[current_cell.first][current_cell.second] = true;
-    mb[current_cell.first][current_cell.second] = current_cell.first + current_cell.second + 1;
+    mb[current_cell.first][current_cell.second] = 1;
     // counter--;
+    parent_vector[0]=-1;
 
     while (!q.empty())
     {
@@ -215,22 +243,31 @@ void Maze::bfs()
         
         unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
         shuffle(directions.begin(), directions.end(), std::default_random_engine(seed));
-
+                
         for (auto &i : directions)
         {
             if (is_valid(i))
             {
-
                 q.push(i);
                 vis[i.first][i.second] = true;
-
-                mb[i.first][i.second] = (i.first + i.second) + 1;
+                // mb[i.first][i.second] = (i.first + i.second) + 1;
+                parent_vector[(parent_maze[i.first][i.second])]=parent_maze[current_cell.first][current_cell.second];
 
                 if (i == Goal_cell)
                 {
+                    std::cout<<std::endl;
                     bfs_cells_to_goal = (i.first + i.second) + 1;
+                    mb[i.first][i.second]=bfs_cells_to_goal;
                     std::cout << "\n"
                               << "I found the shortest path !!!" << std::endl;
+                    std::pair <size_t,size_t> corr =i;
+                    size_t pw{1};
+                    while(pw!=0)
+                    {
+                        pw = parent_vector[cordinates_to_point(corr)];
+                        route.push_back(pw);
+                        corr=point_to_cordinates(pw);
+                    }
                     break;
                 }
             }
@@ -239,43 +276,11 @@ void Maze::bfs()
                 continue;
         }
     }
-
-    
-    size_t possible_ways = 0;
-    for (size_t i{}; i < rows; i++)
+    for(auto i:route)
     {
-        for (size_t j{}; j < columns; j++)
-        {
-            current_cell = {i, j};
-
-            std::pair<size_t,size_t> up{current_cell.first, current_cell.second - 1};
-            std::pair<size_t,size_t> down{current_cell.first, current_cell.second + 1};
-            std::pair<size_t,size_t> left{current_cell.first - 1, current_cell.second};
-            std::pair<size_t,size_t> right{current_cell.first + 1, current_cell.second};
-            std::vector<std::pair<size_t,size_t>> directions{up, down, left, right};
-
-            unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-            shuffle(directions.begin(), directions.end(), std::default_random_engine(seed));
-
-            if (mb[i][j] != -100 && mb[i][j] != 0)
-            {
-                // std::cout<<mb[i][j]<<std::endl;
-                for (auto d : directions)
-                {
-                    std::cout <<d.first<<"  " <<d.second<< std::endl;
-                    if (is_valid_prime(d))
-                    {
-                        bool check{mb[i][j]+1==mb[d.first][d.second]};
-                        // std::cout<<check<<std::endl;
-                        if (check)
-                        {
-                            possible_ways++;
-                            if (possible_ways > 1)
-                                mb[d.first][d.second] = 0;
-                        }
-                    }
-                }
-            }
-        }
+        mb[point_to_cordinates(i).first][point_to_cordinates(i).second]=bfs_cells_to_goal-1;
+        bfs_cells_to_goal--;
+        std::cout<<i<<" ";
     }
+    std::cout<<"\n";
 }

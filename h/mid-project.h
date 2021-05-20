@@ -8,6 +8,7 @@
 #include <random>
 #include <chrono>
 #include <string>
+#include <list>
 // #include <bits/stdc++.h>
 #include <queue>
 
@@ -26,9 +27,12 @@ class Maze
         bool is_valid(std::pair<size_t,size_t> p);
         bool is_valid_prime(std::pair<size_t,size_t> p);
         void randorm_choose();
+        std::pair<size_t,size_t> point_to_cordinates(size_t );
+        size_t cordinates_to_point(std::pair<size_t,size_t>);
         showing_maze sm;
         maze m;
         maze mb;
+        maze parent_maze;
         size_t dfs_cells_to_goal;
         size_t bfs_cells_to_goal;
     private:
