@@ -22,18 +22,6 @@ Maze::Maze(size_t r, size_t c, double _percentage)
     maze_show();
 }
 
-std::pair<size_t,size_t> Maze::point_to_cordinates(size_t point)
-{
-    size_t r = size_t(point/columns);
-    size_t c = point-(r*columns);
-    std::pair<size_t,size_t> cor{r,c};
-    return cor;
-}
-
-size_t Maze::cordinates_to_point(std::pair<size_t,size_t> cori)
-{
-    return parent_maze[cori.first][cori.second];
-}
 
 
 void Maze::path_show(maze _m)
@@ -190,17 +178,26 @@ bool Maze::is_valid_prime(std::pair<size_t, size_t> p)
     else
         return true;
 }
+std::pair<size_t,size_t> Maze::point_to_cordinates(size_t point)
+{
+    size_t r = size_t(point/columns);
+    size_t c = point-(r*columns);
+    std::pair<size_t,size_t> cor{r,c};
+    return cor;
+}
+
+size_t Maze::cordinates_to_point(std::pair<size_t,size_t> cori)
+{
+    return parent_maze[cori.first][cori.second];
+}
 
 void Maze::bfs()
 {
-
-    // Maze* mb = new Maze(rows,columns,percentage);
     std::pair<size_t, size_t> starting_cell = {0, 0};
     std::pair<size_t, size_t> Goal_cell = {rows - 1, columns - 1};
 
     std::queue<std::pair<size_t, size_t>> q;
     std::pair<size_t, size_t> current_cell = starting_cell;
-    // q:
     for (size_t i{}; i < vis.size(); i++)
     {
         for (size_t j{}; j < vis[0].size(); j++)
@@ -215,7 +212,7 @@ void Maze::bfs()
     {
         for (size_t j{}; j < columns; j++)
         {
-            if (mb[i][j] != -100) //|| m[rows][columns] != 0)
+            if (mb[i][j] != -100)
             {
                 mb[i][j] = 0;
             }
@@ -227,11 +224,12 @@ void Maze::bfs()
     q.push(current_cell);
     vis[current_cell.first][current_cell.second] = true;
     mb[current_cell.first][current_cell.second] = 1;
-    // counter--;
-    parent_vector[0]=-1;
 
+    parent_vector[0]=-1;
+    bfs_cells_to_goal=1;
     while (!q.empty())
     {
+        bfs_cells_to_goal = bfs_cells_to_goal + 1;
         current_cell = q.front();
         q.pop();
 
@@ -250,14 +248,11 @@ void Maze::bfs()
             {
                 q.push(i);
                 vis[i.first][i.second] = true;
-                // mb[i.first][i.second] = (i.first + i.second) + 1;
                 parent_vector[(parent_maze[i.first][i.second])]=parent_maze[current_cell.first][current_cell.second];
-
                 if (i == Goal_cell)
                 {
-                    std::cout<<std::endl;
-                    bfs_cells_to_goal = (i.first + i.second) + 1;
-                    mb[i.first][i.second]=bfs_cells_to_goal;
+                    // std::cout<<std::endl;
+                    // mb[i.first][i.second]=bfs_cells_to_goal;
                     std::cout << "\n"
                               << "I found the shortest path !!!" << std::endl;
                     std::pair <size_t,size_t> corr =i;
@@ -276,9 +271,11 @@ void Maze::bfs()
                 continue;
         }
     }
+    bfs_cells_to_goal=route.size();
+    mb[Goal_cell.first][Goal_cell.second]=bfs_cells_to_goal+1;
     for(auto i:route)
     {
-        mb[point_to_cordinates(i).first][point_to_cordinates(i).second]=bfs_cells_to_goal-1;
+        mb[point_to_cordinates(i).first][point_to_cordinates(i).second]=bfs_cells_to_goal;
         bfs_cells_to_goal--;
         std::cout<<i<<" ";
     }
