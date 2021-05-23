@@ -91,7 +91,10 @@ void Maze::maze_show()
                 printf("\033[%dm    \033[m",47);
             }
             else
-                std::cout << std::setw(2) << std::left << "|" << std::setw(3) << std::fixed << " ";  //sm[i][j];
+            {
+                std::cout<<std::setw(13);
+                std::cout << std::setw(2) << std::left << "|" << std::setw(3) << " ";  //sm[i][j];
+            }
         }
         std::cout << "|";
         std::cout << std::endl;

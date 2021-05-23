@@ -22,7 +22,7 @@ class Maze
     public:
         Maze(size_t,size_t,double);
         void maze_show();
-        // void maze_show_2();
+        // //void maze_show_2();
         void path_show(maze);
         void dfs();
         void bfs();
