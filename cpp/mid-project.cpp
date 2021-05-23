@@ -7,7 +7,7 @@ Maze::Maze(size_t r, size_t c, double _percentage)
     percentage = _percentage;
     m = maze(rows, std::vector<int>(columns, 0));
     mb = maze(rows, std::vector<int>(columns, 0));
-    sm = showing_maze(rows, std::vector<std::string>(columns, " "));
+    // sm = showing_maze(rows, std::vector<std::string>(columns, " "));
     parent_maze = maze(rows, std::vector<int>(columns, 0));
     for (size_t i{}; i < rows; i++)
     {
@@ -24,6 +24,22 @@ Maze::Maze(size_t r, size_t c, double _percentage)
 
 
 
+// void Maze::path_show(maze _m)
+// {
+//     std::cout << "\n";
+//     for (size_t i{}; i < rows; i++)
+//     {
+//         for (size_t j{}; j < columns; j++)
+//         {
+//             std::cout << std::setw(4) << std::left << "|" << std::setw(4) << std::fixed << _m[i][j];
+//         }
+//         std::cout << "|";
+//         std::cout << std::endl;
+//         for (size_t i{}; i < columns; i++)
+//             std::cout << "--------";
+//         std::cout << std::endl;
+//     }
+// }
 void Maze::path_show(maze _m)
 {
     std::cout << "\n";
@@ -40,22 +56,47 @@ void Maze::path_show(maze _m)
         std::cout << std::endl;
     }
 }
+// void Maze::maze_show_2()
+// {
+//     std::cout << "\n";
+//     for (size_t i{}; i < columns; i++)
+//         std::cout << "------";
+//     std::cout << std::endl;
+//     for (size_t i{}; i < rows; i++)
+//     {
+//         for (size_t j{}; j < columns; j++)
+//         {
+//             std::cout << std::setw(2) << std::left << "|" << std::setw(4) << std::fixed << sm[i][j];
+//         }
+//         std::cout << "|";
+//         std::cout << std::endl;
+//         for (size_t i{}; i < columns; i++)
+//             std::cout << "------";
+//         std::cout << std::endl;
+//     }
+// }
 void Maze::maze_show()
 {
     std::cout << "\n";
     for (size_t i{}; i < columns; i++)
-        std::cout << "------";
+        std::cout << "-----";
     std::cout << std::endl;
     for (size_t i{}; i < rows; i++)
     {
         for (size_t j{}; j < columns; j++)
         {
-            std::cout << std::setw(2) << std::left << "|" << std::setw(4) << std::fixed << sm[i][j];
+            if(m[i][j]==-100)
+            {
+                std::cout<<"|";
+                printf("\033[%dm    \033[m",47);
+            }
+            else
+                std::cout << std::setw(2) << std::left << "|" << std::setw(3) << std::fixed << " ";  //sm[i][j];
         }
         std::cout << "|";
         std::cout << std::endl;
         for (size_t i{}; i < columns; i++)
-            std::cout << "------";
+            std::cout << "-----";
         std::cout << std::endl;
     }
 }
@@ -97,7 +138,7 @@ q:
             dfs_cells_to_goal = counter;
             if (current_cell == Goal_cell)
             {
-                if (counter < (size_t(rows + columns) * 1.4))
+                if (counter < (size_t(rows + columns) * 1.3))
                 {
                     break;
                 }
@@ -123,7 +164,7 @@ q:
             st.push(i);
     }
 n:
-    if (m[Goal_cell.first][Goal_cell.second] > int((rows + columns) * 1.4))
+    if (m[Goal_cell.first][Goal_cell.second] > int((rows + columns) * 1.3))
     {
         while (!st.empty())
         {
@@ -159,7 +200,7 @@ void Maze::randorm_choose()
         size_t random_column = rand() % (columns);
         if (m[random_row][random_column] == 0)
         {
-            sm[random_row][random_column] = "***";
+            // sm[random_row][random_column] = "***";
             m[random_row][random_column] = -100;
             mb[random_row][random_column] = -100;
             counter++;
@@ -277,7 +318,7 @@ void Maze::bfs()
     {
         mb[point_to_cordinates(i).first][point_to_cordinates(i).second]=bfs_cells_to_goal;
         bfs_cells_to_goal--;
-        std::cout<<i<<" ";
+        // std::cout<<i<<" ";
     }
     std::cout<<"\n";
 }

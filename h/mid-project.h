@@ -1,6 +1,8 @@
 #ifndef MID_PROJECT_H
 #define MID_PROJECT_H
 #include <iostream>
+#include <stdio.h>
+#include<iomanip>
 #include <vector>
 #include <stack>
 #include <iomanip>
@@ -9,17 +11,18 @@
 #include <chrono>
 #include <string>
 #include <list>
-// #include <bits/stdc++.h>
 #include <queue>
+// #include <windows.h>
+// #include <bits/stdc++.h>
 
 class Maze
 {
     using maze = std::vector<std::vector<int>>;
-    using showing_maze = std::vector<std::vector<std::string>>;
-    
+  
     public:
         Maze(size_t,size_t,double);
         void maze_show();
+        // void maze_show_2();
         void path_show(maze);
         void dfs();
         void bfs();
@@ -29,7 +32,7 @@ class Maze
         void randorm_choose();
         std::pair<size_t,size_t> point_to_cordinates(size_t );
         size_t cordinates_to_point(std::pair<size_t,size_t>);
-        showing_maze sm;
+        // showing_maze sm;
         maze m;
         maze mb;
         maze parent_maze;
