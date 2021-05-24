@@ -22,25 +22,7 @@ Maze::Maze(size_t r, size_t c, double _percentage)
     maze_show();
 }
 
-
-
-// void Maze::path_show(maze _m)
-// {
-//     std::cout << "\n";
-//     for (size_t i{}; i < rows; i++)
-//     {
-//         for (size_t j{}; j < columns; j++)
-//         {
-//             std::cout << std::setw(4) << std::left << "|" << std::setw(4) << std::fixed << _m[i][j];
-//         }
-//         std::cout << "|";
-//         std::cout << std::endl;
-//         for (size_t i{}; i < columns; i++)
-//             std::cout << "--------";
-//         std::cout << std::endl;
-//     }
-// }
-void Maze::path_show(maze _m)
+void Maze::path_show_2(maze _m)
 {
     std::cout << "\n";
     for (size_t i{}; i < rows; i++)
@@ -53,6 +35,49 @@ void Maze::path_show(maze _m)
         std::cout << std::endl;
         for (size_t i{}; i < columns; i++)
             std::cout << "--------";
+        std::cout << std::endl;
+    }
+}
+void Maze::path_show(maze _m)
+{
+    std::cout << "\n";
+    for (size_t i{}; i < columns; i++)
+        std::cout << "-----";
+    std::cout << std::endl;
+    size_t path_num{1};
+    p:
+    for (size_t i{}; i < rows; i++)
+    {
+        for (size_t j{}; j < columns; j++)
+        {
+            if(_m[i][j]==-100)
+            {
+                std::cout<<"|";
+                printf("\033[%dm    \033[m",47);
+            }
+            else if(_m[i][j] != 0)
+            {
+                std::cout<<"|";
+                printf("\033[%dm %3d\033[m", 44 ,_m[i][j]);
+                // std::cout<<std::flush;
+                // waitms(100);
+                // printf("\033[%dm    \033[m",42,_m[i][j]);
+                // path_num++;
+                // if(_m[rows-1][columns-1]==path_num)
+                //     break;
+                // else
+                //     goto p; 
+            }
+            else
+            {
+                std::cout<<std::setw(13);
+                std::cout << std::setw(2) << std::left << "|" << std::setw(3) << " ";  //sm[i][j];
+            }
+        }
+        std::cout << "|";
+        std::cout << std::endl;
+        for (size_t i{}; i < columns; i++)
+            std::cout << "-----";
         std::cout << std::endl;
     }
 }
@@ -295,10 +320,6 @@ void Maze::bfs()
                 parent_vector[(parent_maze[i.first][i.second])]=parent_maze[current_cell.first][current_cell.second];
                 if (i == Goal_cell)
                 {
-                    // std::cout<<std::endl;
-                    // mb[i.first][i.second]=bfs_cells_to_goal;
-                    std::cout << "\n"
-                              << "I found the shortest path !!!" << std::endl;
                     std::pair <size_t,size_t> corr =i;
                     size_t pw{1};
                     while(pw!=0)
@@ -323,5 +344,6 @@ void Maze::bfs()
         bfs_cells_to_goal--;
         // std::cout<<i<<" ";
     }
+    bfs_cells_to_goal=route.size();
     std::cout<<"\n";
 }

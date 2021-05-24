@@ -15,6 +15,8 @@
 // #include <windows.h>
 // #include <bits/stdc++.h>
 
+  
+
 class Maze
 {
     using maze = std::vector<std::vector<int>>;
@@ -24,6 +26,8 @@ class Maze
         void maze_show();
         // //void maze_show_2();
         void path_show(maze);
+        void path_show_2(maze);
+        
         void dfs();
         void bfs();
         std::vector<std::vector<bool>> vis;
