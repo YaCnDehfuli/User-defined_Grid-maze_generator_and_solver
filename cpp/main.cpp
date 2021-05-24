@@ -29,12 +29,18 @@ p:
         {
             if (r == 0 || r == 1)
             {
-                printf("\033[%dm\n You can't have a maze with that row ⛔ !!.Try again: \033[m", 91);
+                printf("\033[%dm\n You can't have a maze with that row size ⛔ !!.Try again: \033[m", 91);
                 std::cin.clear();
-                while (std::cin.get() != '\n')
-                    ;
+                while (std::cin.get() != '\n');
             }
-            else
+            else if(r>35)
+            {
+                printf("\033[%dm\n SORRY 😓 !! this row size is going to create a maze which is bigger   \033[m\n", 91);
+                printf("\033[%dm than VScode console size ⛔! Try lower dimentions (Maximum:35) : \033[m", 91);
+                std::cin.clear();
+                while (std::cin.get() != '\n');
+            }
+            else    
                 break;
         }
 
@@ -42,8 +48,7 @@ p:
         {
             printf("\033[%dm\n You are NOT entering a number ⛔ !!.Try again: \033[m", 91);
             std::cin.clear();
-            while (std::cin.get() != '\n')
-                ; // empty loop
+            while (std::cin.get() != '\n');
         }
     }
 
@@ -54,10 +59,9 @@ p:
         {
             if (c == 0 || c == 1)
             {
-                printf("\033[%dm\n You can't have a maze with that column ⛔ !!.Try again: \033[m", 91);
+                printf("\033[%dm\n You can't have a maze with that column size ⛔ !!.Try again: \033[m", 91);
                 std::cin.clear();
-                while (std::cin.get() != '\n')
-                    ;
+                while (std::cin.get() != '\n');
             }
             else
                 break;
@@ -66,8 +70,7 @@ p:
         {
             printf("\033[%dm\n You are NOT entering a number ⛔ !!.Try again: \033[m", 91);
             std::cin.clear();
-            while (std::cin.get() != '\n')
-                ; // empty loop
+            while (std::cin.get() != '\n'); 
         }
     }
     std::cout << "\n\n\n";
@@ -87,8 +90,7 @@ p:
             {
                 printf("\033[%dm\n No number above 100 is allowed ⛔ !!.Try again: \033[m", 91);
                 std::cin.clear();
-                while (std::cin.get() != '\n')
-                    ;
+                while (std::cin.get() != '\n');
             }
             else
                 break;
@@ -97,8 +99,7 @@ p:
         {
             printf("\033[%dm\n You are NOT entering a number ⛔ !!.Try again: \033[m", 91);
             std::cin.clear();
-            while (std::cin.get() != '\n')
-                ;
+            while (std::cin.get() != '\n');
         }
     }
 
@@ -117,8 +118,7 @@ p:
             {
                 printf("\033[%dm\n You are NOT choosing ⛔ !!.Try again: \033[m", 91);
                 std::cin.clear();
-                while (std::cin.get() != '\n')
-                    ;
+                while (std::cin.get() != '\n');
             }
             else
                 break;
@@ -127,8 +127,7 @@ p:
         {
             printf("\033[%dm\n You are NOT choosing ⛔ !!.Try again: \033[m", 91);
             std::cin.clear();
-            while (std::cin.get() != '\n')
-                ;
+            while (std::cin.get() != '\n');
         }
     }
 
@@ -149,7 +148,7 @@ p:
     
     
     printf("\033[38;5;%dm ⬇⬇⬇⬇⬇⬇ THIS IS DFS ALGORITHM ⬇⬇⬇⬇⬇⬇ \033[m\n", 121);
-    n.path_show(n.m);
+    n.path_show(n.DFS_maze);
     std::cout<<"\n";
     printf("\033[38;5;%dmThis path used\033[m", 93);
     printf("\033[%dm%3ld\033[m",91,n.dfs_cells_to_goal-1);
@@ -159,21 +158,10 @@ p:
     std::cout<<"\n";
     printf("\033[38;5;%dm\n ⬇⬇⬇⬇⬇⬇ THIS IS BFS ALGORITHM ⬇⬇⬇⬇⬇⬇ \033[m", 121);
     n.bfs();
-    n.path_show(n.mb);
+    n.path_show(n.BFS_maze);
     std::cout<<"\n";
     printf("\033[38;5;%dmThis path used\033[m", 93);
     printf("\033[%dm%3ld\033[m",91,n.bfs_cells_to_goal+1);
     printf("\033[38;5;%dm cells to reach the goal cell which is the shortest path possible!\033[m\n\n", 93);
     
-    
-    // printf("\033[38;5;%dm\033[m\n",87);
-
-    // Maze n(14, 14, 50);
-    // n.maze_show_2();
-    //     // n.dfs();
-    // n.bfs();
-    //     n.path_show(n.mb);
-    // n.path_show_2(n.m);
-    // n.path_show(n.mb);
 }
-// Ok🏁.Now it's time to solve your maze

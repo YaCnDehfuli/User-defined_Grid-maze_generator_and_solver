@@ -7,18 +7,6 @@ RUN apt-get -qq update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# RUN git clone --depth=1 -b master https://github.com/google/googletest.git
-# # RUN mkdir googletest/build
-
-# WORKDIR /usr/src/app/googletest/build
-
-# RUN cmake .. \
-#     && make \
-#     && make install \
-#     && rm -rf /usr/src/app/
-
-# WORKDIR /usr/src/app
-
 COPY . .
 RUN mkdir obj
 

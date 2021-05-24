@@ -5,9 +5,8 @@ Maze::Maze(size_t r, size_t c, double _percentage)
     rows = r;
     columns = c;
     percentage = _percentage;
-    m = maze(rows, std::vector<int>(columns, 0));
-    mb = maze(rows, std::vector<int>(columns, 0));
-    // sm = showing_maze(rows, std::vector<std::string>(columns, " "));
+    DFS_maze = maze(rows, std::vector<int>(columns, 0));
+    BFS_maze = maze(rows, std::vector<int>(columns, 0));
     parent_maze = maze(rows, std::vector<int>(columns, 0));
     for (size_t i{}; i < rows; i++)
     {
@@ -22,30 +21,12 @@ Maze::Maze(size_t r, size_t c, double _percentage)
     maze_show();
 }
 
-void Maze::path_show_2(maze _m)
-{
-    std::cout << "\n";
-    for (size_t i{}; i < rows; i++)
-    {
-        for (size_t j{}; j < columns; j++)
-        {
-            std::cout << std::setw(4) << std::left << "|" << std::setw(4) << std::fixed << _m[i][j];
-        }
-        std::cout << "|";
-        std::cout << std::endl;
-        for (size_t i{}; i < columns; i++)
-            std::cout << "--------";
-        std::cout << std::endl;
-    }
-}
 void Maze::path_show(maze _m)
 {
     std::cout << "\n";
     for (size_t i{}; i < columns; i++)
         std::cout << "-----";
     std::cout << std::endl;
-    size_t path_num{1};
-    p:
     for (size_t i{}; i < rows; i++)
     {
         for (size_t j{}; j < columns; j++)
@@ -59,19 +40,12 @@ void Maze::path_show(maze _m)
             {
                 std::cout<<"|";
                 printf("\033[%dm %3d\033[m", 44 ,_m[i][j]);
-                // std::cout<<std::flush;
-                // waitms(100);
-                // printf("\033[%dm    \033[m",42,_m[i][j]);
-                // path_num++;
-                // if(_m[rows-1][columns-1]==path_num)
-                //     break;
-                // else
-                //     goto p; 
+
             }
             else
             {
                 std::cout<<std::setw(13);
-                std::cout << std::setw(2) << std::left << "|" << std::setw(3) << " ";  //sm[i][j];
+                std::cout << std::setw(2) << std::left << "|" << std::setw(3) << " "; 
             }
         }
         std::cout << "|";
@@ -81,25 +55,8 @@ void Maze::path_show(maze _m)
         std::cout << std::endl;
     }
 }
-// void Maze::maze_show_2()
-// {
-//     std::cout << "\n";
-//     for (size_t i{}; i < columns; i++)
-//         std::cout << "------";
-//     std::cout << std::endl;
-//     for (size_t i{}; i < rows; i++)
-//     {
-//         for (size_t j{}; j < columns; j++)
-//         {
-//             std::cout << std::setw(2) << std::left << "|" << std::setw(4) << std::fixed << sm[i][j];
-//         }
-//         std::cout << "|";
-//         std::cout << std::endl;
-//         for (size_t i{}; i < columns; i++)
-//             std::cout << "------";
-//         std::cout << std::endl;
-//     }
-// }
+
+
 void Maze::maze_show()
 {
     std::cout << "\n";
@@ -110,7 +67,7 @@ void Maze::maze_show()
     {
         for (size_t j{}; j < columns; j++)
         {
-            if(m[i][j]==-100)
+            if(DFS_maze[i][j]==-100)
             {
                 std::cout<<"|";
                 printf("\033[%dm    \033[m",47);
@@ -137,7 +94,7 @@ bool Maze::is_valid(std::pair<size_t, size_t> p)
         return false;
     else if (vis[p.first][p.second])
         return false;
-    else if (m[p.first][p.second] == -100)
+    else if (DFS_maze[p.first][p.second] == -100)
         return false;
     else
         return true;
@@ -161,7 +118,7 @@ q:
         if (is_valid(current_cell))
         {
             vis[current_cell.first][current_cell.second] = true;
-            m[current_cell.first][current_cell.second] = counter;
+            DFS_maze[current_cell.first][current_cell.second] = counter;
             counter++;
             dfs_cells_to_goal = counter;
             if (current_cell == Goal_cell)
@@ -192,7 +149,7 @@ q:
             st.push(i);
     }
 n:
-    if (m[Goal_cell.first][Goal_cell.second] > int((rows + columns) * 1.3))
+    if (DFS_maze[Goal_cell.first][Goal_cell.second] > int((rows + columns) * 1.3))
     {
         while (!st.empty())
         {
@@ -212,7 +169,7 @@ n:
         {
             for (size_t j{}; j < columns; j++)
             {
-                m[i][j] = 0;
+                DFS_maze[i][j] = 0;
             }
         }
         goto q;
@@ -221,32 +178,20 @@ n:
 
 void Maze::randorm_choose()
 {
-    size_t counter{};
+    size_t counter{1};
     while (counter <= size_t((rows * columns - dfs_cells_to_goal) * percentage / 100) + 1)
     {
         size_t random_row = rand() % (rows);
         size_t random_column = rand() % (columns);
-        if (m[random_row][random_column] == 0)
+        if (DFS_maze[random_row][random_column] == 0)
         {
-            // sm[random_row][random_column] = "***";
-            m[random_row][random_column] = -100;
-            mb[random_row][random_column] = -100;
+            DFS_maze[random_row][random_column] = -100;
+            BFS_maze[random_row][random_column] = -100;
             counter++;
         }
     }
 }
 
-bool Maze::is_valid_prime(std::pair<size_t, size_t> p)
-{
-    if(p.first <0 || p.second<0)
-        return false;
-    else if (p.first >= rows || p.second >= columns)
-        return false;
-    else if (mb[p.first][p.second] == -100)
-        return false;
-    else
-        return true;
-}
 std::pair<size_t,size_t> Maze::point_to_cordinates(size_t point)
 {
     size_t r = size_t(point/columns);
@@ -281,9 +226,9 @@ void Maze::bfs()
     {
         for (size_t j{}; j < columns; j++)
         {
-            if (mb[i][j] != -100)
+            if (BFS_maze[i][j] != -100)
             {
-                mb[i][j] = 0;
+                BFS_maze[i][j] = 0;
             }
         }
     }
@@ -292,7 +237,7 @@ void Maze::bfs()
 
     q.push(current_cell);
     vis[current_cell.first][current_cell.second] = true;
-    mb[current_cell.first][current_cell.second] = 1;
+    BFS_maze[current_cell.first][current_cell.second] = 1;
 
     parent_vector[0]=-1;
     bfs_cells_to_goal=1;
@@ -337,12 +282,11 @@ void Maze::bfs()
         }
     }
     bfs_cells_to_goal=route.size();
-    mb[Goal_cell.first][Goal_cell.second]=bfs_cells_to_goal+1;
+    BFS_maze[Goal_cell.first][Goal_cell.second]=bfs_cells_to_goal+1;
     for(auto i:route)
     {
-        mb[point_to_cordinates(i).first][point_to_cordinates(i).second]=bfs_cells_to_goal;
+        BFS_maze[point_to_cordinates(i).first][point_to_cordinates(i).second]=bfs_cells_to_goal;
         bfs_cells_to_goal--;
-        // std::cout<<i<<" ";
     }
     bfs_cells_to_goal=route.size();
     std::cout<<"\n";
