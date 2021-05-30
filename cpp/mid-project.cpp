@@ -1,5 +1,6 @@
 #include "mid-project.h"
 
+
 Maze::Maze(size_t r, size_t c, double _percentage)
 {
     rows = r;
@@ -7,7 +8,11 @@ Maze::Maze(size_t r, size_t c, double _percentage)
     percentage = _percentage;
     DFS_maze = maze(rows, std::vector<int>(columns, 0));
     BFS_maze = maze(rows, std::vector<int>(columns, 0));
+    Backward_BFS_maze = maze(rows, std::vector<int>(columns, 0));
+    Bidirectional_maze = maze(rows, std::vector<int>(columns, 0));
     parent_maze = maze(rows, std::vector<int>(columns, 0));
+    std::vector<size_t> BFS_route;
+    std::vector<size_t> Backward_BFS_route;
     for (size_t i{}; i < rows; i++)
     {
         for (size_t j{}; j < columns; j++)
@@ -16,7 +21,7 @@ Maze::Maze(size_t r, size_t c, double _percentage)
         }
     }
     vis = std::vector<std::vector<bool>>(rows, std::vector<bool>(columns, false));
-    dfs();
+    dfs(1.3);
     randorm_choose();
     maze_show();
 }
@@ -36,11 +41,16 @@ void Maze::path_show(maze _m)
                 std::cout<<"|";
                 printf("\033[%dm    \033[m",47);
             }
-            else if(_m[i][j] != 0)
+            else if(_m[i][j] > 0)
             {
                 std::cout<<"|";
                 printf("\033[%dm %3d\033[m", 44 ,_m[i][j]);
 
+            }
+            else if(_m[i][j]<0 && _m[i][j]>-100)
+            {
+                std::cout<<"|";
+                printf("\033[%dm %3d\033[m", 45 ,-1*_m[i][j]);
             }
             else
             {
@@ -100,7 +110,7 @@ bool Maze::is_valid(std::pair<size_t, size_t> p)
         return true;
 }
 
-void Maze::dfs()
+void Maze::dfs(double coef)
 {
     std::pair<size_t, size_t> starting_cell = {0, 0};
     std::pair<size_t, size_t> Goal_cell = {rows - 1, columns - 1};
@@ -123,7 +133,7 @@ q:
             dfs_cells_to_goal = counter;
             if (current_cell == Goal_cell)
             {
-                if (counter < (size_t(rows + columns) * 1.3))
+                if (counter < (size_t(rows + columns) * coef))
                 {
                     break;
                 }
@@ -149,7 +159,7 @@ q:
             st.push(i);
     }
 n:
-    if (DFS_maze[Goal_cell.first][Goal_cell.second] > int((rows + columns) * 1.3))
+    if (DFS_maze[Goal_cell.first][Goal_cell.second] > int((rows + columns) * coef))
     {
         while (!st.empty())
         {
@@ -187,6 +197,8 @@ void Maze::randorm_choose()
         {
             DFS_maze[random_row][random_column] = -100;
             BFS_maze[random_row][random_column] = -100;
+            Backward_BFS_maze[random_row][random_column]=-100;
+            Bidirectional_maze[random_row][random_column]=-100;
             counter++;
         }
     }
@@ -220,8 +232,6 @@ void Maze::bfs()
         }
     }
 
-
-
     for (size_t i{}; i < rows; i++)
     {
         for (size_t j{}; j < columns; j++)
@@ -233,8 +243,6 @@ void Maze::bfs()
         }
     }
     std::vector<size_t> parent_vector (rows*columns);
-    std::vector<size_t> route;
-
     q.push(current_cell);
     vis[current_cell.first][current_cell.second] = true;
     BFS_maze[current_cell.first][current_cell.second] = 1;
@@ -270,7 +278,7 @@ void Maze::bfs()
                     while(pw!=0)
                     {
                         pw = parent_vector[cordinates_to_point(corr)];
-                        route.push_back(pw);
+                        BFS_route.push_back(pw);
                         corr=point_to_cordinates(pw);
                     }
                     break;
@@ -281,13 +289,152 @@ void Maze::bfs()
                 continue;
         }
     }
-    bfs_cells_to_goal=route.size();
+    bfs_cells_to_goal=BFS_route.size();
     BFS_maze[Goal_cell.first][Goal_cell.second]=bfs_cells_to_goal+1;
-    for(auto i:route)
+    for(auto i:BFS_route)
     {
         BFS_maze[point_to_cordinates(i).first][point_to_cordinates(i).second]=bfs_cells_to_goal;
         bfs_cells_to_goal--;
     }
-    bfs_cells_to_goal=route.size();
-    std::cout<<"\n";
+    bfs_cells_to_goal=BFS_route.size();
+}
+
+void Maze::Backward_bfs()
+{
+    std::pair<size_t, size_t> starting_cell = {rows - 1, columns - 1};
+    std::pair<size_t, size_t> Goal_cell = {0, 0};
+
+    std::queue<std::pair<size_t, size_t>> q;
+    std::pair<size_t, size_t> current_cell = starting_cell;
+    
+    for (size_t i{}; i < vis.size(); i++)
+    {
+        for (size_t j{}; j < vis[0].size(); j++)
+        {
+            vis[i][j] = false;
+        }
+    }
+
+    for (size_t i{}; i < rows; i++)
+    {
+        for (size_t j{}; j < columns; j++)
+        {
+            if (Backward_BFS_maze[i][j] != -100)
+            {
+                Backward_BFS_maze[i][j] = 0;
+            }
+        }
+    }
+    std::vector<size_t> Backward_parent_vector (rows*columns);
+
+    q.push(current_cell);
+    
+    vis[current_cell.first][current_cell.second] = true;
+    Backward_BFS_maze[current_cell.first][current_cell.second] = 1;
+
+    Backward_parent_vector[0]=-1;
+    
+    while (!q.empty())
+    {
+        current_cell = q.front();
+        q.pop();
+
+        std::pair<size_t, size_t> up{current_cell.first, current_cell.second - 1};
+        std::pair<size_t, size_t> down{current_cell.first, current_cell.second + 1};
+        std::pair<size_t, size_t> left{current_cell.first - 1, current_cell.second};
+        std::pair<size_t, size_t> right{current_cell.first + 1, current_cell.second};
+        std::vector<std::pair<size_t, size_t>> directions{up, down, left, right};
+        
+        unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+        shuffle(directions.begin(), directions.end(), std::default_random_engine(seed));
+                
+        for (auto &i : directions)
+        {
+            if (is_valid(i))
+            {
+                q.push(i);
+                vis[i.first][i.second] = true;
+                Backward_parent_vector[(parent_maze[i.first][i.second])]=parent_maze[current_cell.first][current_cell.second];
+                if (i == Goal_cell)
+                {
+                    std::pair <size_t,size_t> corr =i;
+                    size_t pw{1};
+                    while(pw!=0)
+                    {
+                        pw = Backward_parent_vector[cordinates_to_point(corr)];
+                        Backward_BFS_route.push_back(pw);
+                        corr=point_to_cordinates(pw);
+                    }
+                    break;
+                }
+            }
+
+            else
+                continue;
+        }
+    }
+    size_t Backward_bfs_cells_to_goal {Backward_BFS_route.size()};
+    for(auto i:Backward_BFS_route)
+    {
+        Backward_BFS_maze[point_to_cordinates(i).first][point_to_cordinates(i).second]=Backward_bfs_cells_to_goal-1;
+        Backward_bfs_cells_to_goal--;
+    }
+    Backward_bfs_cells_to_goal=Backward_BFS_route.size();
+    Backward_BFS_maze[Goal_cell.first][Goal_cell.second] = Backward_bfs_cells_to_goal;
+}
+
+void Maze::bidirectional()
+{
+    size_t joint_point;
+    size_t c{1};
+    bool intersection {false};
+    std::reverse(Backward_BFS_route.begin(),Backward_BFS_route.end());
+    std::reverse(BFS_route.begin(),BFS_route.end());
+
+    std::vector<size_t> bfway;
+    std::vector<size_t> bcway;
+    m:
+    bfway.push_back(BFS_route[c]);
+    bcway.push_back(Backward_BFS_route[c]);
+    for(auto i:bfway)
+    {
+        for(auto j:bcway)
+        {
+            if(j==i)
+            {
+                joint_point=i;
+                intersection = true;
+                goto n;
+            }
+        }
+    }
+    if(!intersection)
+    {
+        c++;
+        goto m;
+    }
+    n:
+    size_t cc{0};
+    for(auto i:Backward_BFS_route)
+    {
+        Bidirectional_maze[point_to_cordinates(i).first][point_to_cordinates(i).second]= -1*cc;
+        cc++;
+        if(i==joint_point)
+        {
+            break;
+        }
+
+    }
+    Bidirectional_maze[0][0]=1;
+    size_t ccc{1};
+    for(auto i:BFS_route)
+    {
+        Bidirectional_maze[point_to_cordinates(i).first][point_to_cordinates(i).second]= ccc;
+        ccc++;
+        if(i == joint_point)
+        {
+            break;
+        }
+    }
+    bidirectional_cells_to_goal = cc+ccc-4;
 }
