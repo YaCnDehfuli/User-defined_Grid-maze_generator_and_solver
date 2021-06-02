@@ -111,16 +111,18 @@ p:
     }
 
     printf("\033[38;5;%dm\n ⬇⬇⬇⬇⬇⬇ YOUR MAZE IS READY ⬇⬇⬇⬇⬇⬇ \033[m\n", 121);
+    f:
     Maze n(r, c, p);
 
     printf("\033[38;5;%dm\n1.This is what I wanted 😍 \033[m\n\n", 10);
-    printf("\033[38;5;%dm2.I want to change the maze 😑 \033[m\n\n", 9);
+    printf("\033[38;5;%dm2.I want to change the maze dimentions or obstacles😑 \033[m\n\n", 9);
+    printf("\033[38;5;%dm3.I want different random generation 😑 \033[m\n\n", 9);
     printf("\033[38;5;%dmChoose what it's gonna be : \033[m", 220);
     while (1)
     {
         if (std::cin >> choice)
         {
-            if (choice > 2)
+            if (choice > 3)
             {
                 printf("\033[%dm\n You are NOT choosing ⛔ !!.Try again: \033[m", 91);
                 std::cin.clear();
@@ -136,7 +138,9 @@ p:
             while (std::cin.get() != '\n');
         }
     }
-
+    if (choice == 3)
+        goto f;
+    
     if (choice == 2)
         goto p;
 

@@ -1,6 +1,4 @@
 #include "mid-project.h"
-
-
 Maze::Maze(size_t r, size_t c, double _percentage)
 {
     rows = r;
@@ -92,7 +90,7 @@ void Maze::maze_show()
         std::cout << std::endl;
         for (size_t i{}; i < columns; i++)
             std::cout << "-----";
-        std::cout << std::endl;
+        std::cout <<"\n";
     }
 }
 
