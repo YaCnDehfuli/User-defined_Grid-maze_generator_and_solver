@@ -394,9 +394,9 @@ void Maze::bidirectional()
     m:
     bfway.push_back(BFS_route[c]);
     bcway.push_back(Backward_BFS_route[c]);
-    for(auto i:bfway)
+    for(auto j:bfway)
     {
-        for(auto j:bcway)
+        for(auto i:bcway)
         {
             if(j==i)
             {
@@ -412,27 +412,22 @@ void Maze::bidirectional()
         goto m;
     }
     n:
-    size_t cc{0};
+    size_t backward_half_path{0};
     for(auto i:Backward_BFS_route)
     {
-        Bidirectional_maze[point_to_cordinates(i).first][point_to_cordinates(i).second]= -1*cc;
-        cc++;
+        Bidirectional_maze[point_to_cordinates(i).first][point_to_cordinates(i).second]= -1*backward_half_path;
+        backward_half_path++;
         if(i==joint_point)
-        {
             break;
-        }
-
     }
     Bidirectional_maze[0][0]=1;
-    size_t ccc{1};
+    size_t forward_half_path{1};
     for(auto i:BFS_route)
     {
-        Bidirectional_maze[point_to_cordinates(i).first][point_to_cordinates(i).second]= ccc;
-        ccc++;
+        Bidirectional_maze[point_to_cordinates(i).first][point_to_cordinates(i).second]= forward_half_path;
+        forward_half_path++;
         if(i == joint_point)
-        {
             break;
-        }
     }
-    bidirectional_cells_to_goal = cc+ccc-4;
+    bidirectional_cells_to_goal = backward_half_path+forward_half_path-4;
 }
